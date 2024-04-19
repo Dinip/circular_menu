@@ -46,6 +46,12 @@ class CircularMenu extends StatefulWidget {
   /// ending angle in clockwise radian
   final double? endingAngleInRadian;
 
+  /// should the menu be draggable
+  final bool isDraggable;
+
+  /// step size for dragging
+  final ({double x, double y}) stepSize;
+
   /// creates a circular menu with specific [radius] and [alignment] .
   /// [toggleButtonElevation] ,[toggleButtonPadding] and [toggleButtonMargin] must be
   /// equal or greater than zero.
@@ -70,8 +76,12 @@ class CircularMenu extends StatefulWidget {
     this.startingAngleInRadian,
     this.endingAngleInRadian,
     this.alignAnimationDuration = Duration.zero,
+    this.isDraggable = false,
+    this.stepSize = (x: 0.1, y: 0.1),
   })  : assert(items.isNotEmpty, 'items can not be empty list'),
         assert(items.length > 1, 'if you have one item no need to use a Menu'),
+        assert(stepSize.x > 0 || stepSize.x < 1, 'stepSize.x must be between 0 and 1'),
+        assert(stepSize.y > 0 || stepSize.y < 1, 'stepSize.y must be between 0 and 1'),
         super(key: key);
 
   @override
@@ -86,6 +96,10 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
   double? _startAngle;
   late int _itemsCount;
   late Animation<double> _animation;
+  Alignment _temporaryAlignment = Alignment.bottomCenter;
+  Alignment _finalAlignment = Alignment.bottomCenter;
+  List<double> validXValues = [];
+  List<double> validYValues = [];
 
   /// forward animation
   void forwardAnimation() {
@@ -95,22 +109,6 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
   /// reverse animation
   void reverseAnimation() {
     _animationController.reverse();
-  }
-
-  @override
-  void initState() {
-    _configure();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: widget.animationDuration,
-    )..addListener(() {
-      setState(() {});
-    });
-    _animation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: widget.curve, reverseCurve: widget.reverseCurve),
-    );
-    _itemsCount = widget.items.length;
-    super.initState();
   }
 
   void _configure() {
@@ -137,60 +135,66 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
       _initialAngle = _startAngle! * math.pi;
     } else {
       // alignment center left
-      if (widget.alignment.x == -1 && (widget.alignment.y >= -0.9) && (widget.alignment.y <= 0.9)) {
+      if (_finalAlignment.x == -1 && (_finalAlignment.y >= -0.7) && (_finalAlignment.y <= 0.7)) {
         _completeAngle = 1 * math.pi;
         _initialAngle = 1.5 * math.pi;
         return;
       }
+
       // alignment center right
-      if (widget.alignment.x == 1 && (widget.alignment.y >= -0.9) && (widget.alignment.y <= 0.9)) {
+      if (_finalAlignment.x == 1 && (_finalAlignment.y >= -0.7) && (_finalAlignment.y <= 0.7)) {
         _completeAngle = 1 * math.pi;
         _initialAngle = 0.5 * math.pi;
         return;
       }
+
       // alignment center top
-      if (widget.alignment.y == -1 && (widget.alignment.x >= -0.9) && (widget.alignment.x <= 0.9)) {
+      if (_finalAlignment.y == -1 && (_finalAlignment.x >= -0.7) && (_finalAlignment.x <= 0.7)) {
         _completeAngle = 1 * math.pi;
         _initialAngle = 0 * math.pi;
         return;
       }
+
       // alignment center bottom
-      if (widget.alignment.y == 1 && (widget.alignment.x >= -0.9) && (widget.alignment.x <= 0.9)) {
+      if (_finalAlignment.y == 1 && (_finalAlignment.x >= -0.7) && (_finalAlignment.x <= 0.7)) {
         _completeAngle = 1 * math.pi;
         _initialAngle = 1 * math.pi;
         return;
       }
-      switch (widget.alignment) {
-        case Alignment.center:
-          _completeAngle = 2 * math.pi;
-          _initialAngle = 0 * math.pi;
-          break;
-        case Alignment.bottomRight:
-          _completeAngle = 0.5 * math.pi;
-          _initialAngle = 1 * math.pi;
-          break;
-        case Alignment.bottomLeft:
-          _completeAngle = 0.5 * math.pi;
-          _initialAngle = 1.5 * math.pi;
-          break;
-        case Alignment.topLeft:
-          _completeAngle = 0.5 * math.pi;
-          _initialAngle = 0 * math.pi;
-          break;
-        case Alignment.topRight:
-          _completeAngle = 0.5 * math.pi;
-          _initialAngle = 0.5 * math.pi;
-          break;
-        default:
-          throw 'startingAngleInRadian and endingAngleInRadian can not be null';
-      }
-    }
-  }
 
-  @override
-  void didUpdateWidget(oldWidget) {
-    _configure();
-    super.didUpdateWidget(oldWidget);
+      // alignment top left
+      if (_finalAlignment.x == -1 && _finalAlignment.y < -0.7) {
+        _completeAngle = 0.5 * math.pi;
+        _initialAngle = 0 * math.pi;
+        return;
+      }
+
+      // alignment top right
+      if (_finalAlignment.x == 1 && _finalAlignment.y < -0.7) {
+        _completeAngle = 0.5 * math.pi;
+        _initialAngle = 0.5 * math.pi;
+        return;
+      }
+
+      // alignment bottom left
+      if (_finalAlignment.x == -1 && _finalAlignment.y > 0.7) {
+        _completeAngle = 0.5 * math.pi;
+        _initialAngle = 1.5 * math.pi;
+        return;
+      }
+
+      // alignment bottom right
+      if (_finalAlignment.x == 1 && _finalAlignment.y > 0.7) {
+        _completeAngle = 0.5 * math.pi;
+        _initialAngle = 1 * math.pi;
+        return;
+      }
+
+      // alignment center
+      _completeAngle = 2 * math.pi;
+      _initialAngle = 0 * math.pi;
+      return;
+    }
   }
 
   List<Widget> _buildMenuItems() {
@@ -199,7 +203,7 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
       items.add(
         Positioned.fill(
           child: AnimatedAlign(
-            alignment: widget.alignment,
+            alignment: _finalAlignment,
             duration: widget.alignAnimationDuration,
             curve: Curves.easeOut,
             child: Transform.translate(
@@ -230,7 +234,7 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
   Widget _buildMenuButton(BuildContext context) {
     return Positioned.fill(
       child: AnimatedAlign(
-        alignment: widget.alignment,
+        alignment: _finalAlignment,
         duration: widget.alignAnimationDuration,
         curve: Curves.easeOut,
         child: CircularMenuItemWidget(
@@ -239,7 +243,12 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
             margin: widget.toggleButtonMargin,
             color: widget.toggleButtonColor ?? Theme.of(context).primaryColor,
             padding: (-_animation.value * widget.toggleButtonPadding * 0.5) + widget.toggleButtonPadding,
-            onTap: _closeMenu,
+            onTap: () {
+              _closeMenu();
+              if (widget.toggleButtonOnPressed != null) {
+                widget.toggleButtonOnPressed!();
+              }
+            },
             boxShadow: widget.toggleButtonBoxShadow,
             animatedIcon: AnimatedIcon(
               icon: widget.toggleButtonAnimatedIconData, //AnimatedIcons.menu_close,
@@ -258,25 +267,82 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
     _animationController.status == AnimationStatus.dismissed
         ? (_animationController).forward()
         : (_animationController).reverse();
-    if (widget.toggleButtonOnPressed != null) {
-      widget.toggleButtonOnPressed!();
+  }
+
+  Alignment _roundToNearestValidCoordinate(Alignment alignment) {
+    double roundedX = validXValues.reduce((a, b) => (alignment.x - a).abs() < (alignment.x - b).abs() ? a : b);
+    double roundedY = validYValues.reduce((a, b) => (alignment.y - a).abs() < (alignment.y - b).abs() ? a : b);
+    return Alignment(roundedX, roundedY);
+  }
+
+  List<double> _generateList(double start, double end, double step) {
+    List<double> result = [];
+    for (double i = start; i <= end; i += step) {
+      result.add(double.parse((i).toStringAsFixed(1)));
     }
+    return result;
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        widget.backgroundWidget ?? Container(),
-        ..._buildMenuItems(),
-        _buildMenuButton(context),
-      ],
+  void initState() {
+    validXValues = [..._generateList(-1, 0, widget.stepSize.x), ..._generateList(0, 1, widget.stepSize.x)];
+    validYValues = [..._generateList(-1, 0, widget.stepSize.y), ..._generateList(0, 1, widget.stepSize.y)];
+    _temporaryAlignment = widget.alignment;
+    _finalAlignment = widget.alignment;
+    _configure();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: widget.animationDuration,
+    )..addListener(() {
+        setState(() {});
+      });
+    _animation = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: widget.curve,
+        reverseCurve: widget.reverseCurve,
+      ),
     );
+    _itemsCount = widget.items.length;
+    super.initState();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(oldWidget) {
+    _configure();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Stack _stack = Stack(
+      children: <Widget>[
+        widget.backgroundWidget ?? Container(),
+        ..._buildMenuItems(),
+        _buildMenuButton(context),
+      ],
+    );
+
+    return widget.isDraggable
+        ? GestureDetector(
+            onPanUpdate: (details) {
+              _temporaryAlignment += Alignment(
+                details.delta.dx / (MediaQuery.of(context).size.width / 2),
+                details.delta.dy / (MediaQuery.of(context).size.height / 2),
+              );
+              setState(() {
+                _finalAlignment = _roundToNearestValidCoordinate(_temporaryAlignment);
+                _configure();
+              });
+            },
+            child: _stack,
+          )
+        : _stack;
   }
 }

@@ -12,10 +12,10 @@ class CircularMenuItem {
     this.padding = 10,
     this.margin = 10,
     this.enableBadge = false,
-    this.badgeBottomOffet,
-    this.badgeLeftOffet,
-    this.badgeRightOffet,
-    this.badgeTopOffet,
+    this.badgeBottomOffset,
+    this.badgeLeftOffset,
+    this.badgeRightOffset,
+    this.badgeTopOffset,
     this.badgeRadius,
     this.badgeTextStyle,
     this.badgeLabel,
@@ -33,10 +33,10 @@ class CircularMenuItem {
   final double margin;
   final List<BoxShadow>? boxShadow;
   final bool enableBadge;
-  final double? badgeRightOffet;
-  final double? badgeLeftOffet;
-  final double? badgeTopOffet;
-  final double? badgeBottomOffet;
+  final double? badgeRightOffset;
+  final double? badgeLeftOffset;
+  final double? badgeTopOffset;
+  final double? badgeBottomOffset;
   final double? badgeRadius;
   final TextStyle? badgeTextStyle;
   final String? badgeLabel;
@@ -99,10 +99,10 @@ class CircularMenuItemWidget extends StatelessWidget {
   Widget _buildCircularMenuItemWithBadge(BuildContext context) {
     return _Badge(
       color: item.badgeColor,
-      bottomOffset: item.badgeBottomOffet,
-      rightOffset: item.badgeRightOffet,
-      leftOffset: item.badgeLeftOffet,
-      topOffset: item.badgeTopOffet,
+      bottomOffset: item.badgeBottomOffset,
+      rightOffset: item.badgeRightOffset,
+      leftOffset: item.badgeLeftOffset,
+      topOffset: item.badgeTopOffset,
       radius: item.badgeRadius,
       textStyle: item.badgeTextStyle,
       onTap: item.onTap,

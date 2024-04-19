@@ -1,3 +1,9 @@
+## [4.0.0]
+- fix typo in CircularMenuItem offset params (badgeBottomOffet -> badgeBottomOffset), 13.04.2024.
+- change CircularMenuItem to a data class which is used to build CircularMenuItemWidget, 13.04.2024.
+- add option to CircularMenu to be draggable, 13.04.2024.
+- change alignment behavior of CircularMenu to be draggable, 13.04.2024.
+
 ## [3.0.0]
 - upgrade to Flutter v3.19, 13.04.2024.
 

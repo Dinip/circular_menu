@@ -1,8 +1,8 @@
 name: circular_menu
 description:  A simple animated circular menu for Flutter, Adjustable radius, colors, alignment, animation curve and animation duration.
-version: 3.0.0
-author: Hasan Mohammed <hasanmohammed.hm1@gmail.com>
-homepage: https://github.com/hasan-hm1/circular_menu
+version: 4.0.0
+author: Dinis Pimpão <me@dinispimpao.pt>
+homepage: https://github.com/Dinip/circular_menu
 
 environment:
   sdk: '>=3.3.3 <4.0.0'
@@ -15,6 +15,4 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
 flutter:
-
