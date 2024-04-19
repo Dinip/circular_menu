@@ -1,33 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CircularMenuItem extends StatelessWidget {
-  /// if icon and animatedIcon are passed, icon will be ignored
-  final IconData? icon;
-  final Color? color;
-  final Color? iconColor;
-  final VoidCallback onTap;
-  final double iconSize;
-  final double padding;
-  final double margin;
-  final List<BoxShadow>? boxShadow;
-  final bool enableBadge;
-  final double? badgeRightOffet;
-  final double? badgeLeftOffet;
-  final double? badgeTopOffet;
-  final double? badgeBottomOffet;
-  final double? badgeRadius;
-  final TextStyle? badgeTextStyle;
-  final String? badgeLabel;
-  final Color? badgeTextColor;
-  final Color? badgeColor;
-
-  /// if animatedIcon and icon are passed, icon will be ignored
-  final AnimatedIcon? animatedIcon;
-
-  /// creates a menu item .
-  /// [onTap] must not be null.
-  /// [padding] and [margin]  must be equal or greater than zero.
-  CircularMenuItem({
+class CircularMenuItem {
+  const CircularMenuItem({
     required this.onTap,
     this.icon,
     this.color,
@@ -47,18 +21,50 @@ class CircularMenuItem extends StatelessWidget {
     this.badgeLabel,
     this.badgeTextColor,
     this.badgeColor,
-  })  : assert(padding >= 0.0),
-        assert(margin >= 0.0);
+    this.onTapClosesMenu = true,
+  });
+
+  final IconData? icon;
+  final Color? color;
+  final Color? iconColor;
+  final VoidCallback onTap;
+  final double iconSize;
+  final double padding;
+  final double margin;
+  final List<BoxShadow>? boxShadow;
+  final bool enableBadge;
+  final double? badgeRightOffet;
+  final double? badgeLeftOffet;
+  final double? badgeTopOffet;
+  final double? badgeBottomOffet;
+  final double? badgeRadius;
+  final TextStyle? badgeTextStyle;
+  final String? badgeLabel;
+  final Color? badgeTextColor;
+  final Color? badgeColor;
+  final AnimatedIcon? animatedIcon;
+  final bool onTapClosesMenu;
+}
+
+class CircularMenuItemWidget extends StatelessWidget {
+  CircularMenuItemWidget({
+    required this.item,
+    this.closeMenu,
+  })  : assert(item.padding >= 0.0),
+        assert(item.margin >= 0.0);
+
+  final CircularMenuItem item;
+  final VoidCallback? closeMenu;
 
   Widget _buildCircularMenuItem(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(margin),
+      margin: EdgeInsets.all(item.margin),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        boxShadow: boxShadow ??
+        boxShadow: item.boxShadow ??
             [
               BoxShadow(
-                color: color ?? Theme.of(context).primaryColor,
+                color: item.color ?? Theme.of(context).primaryColor,
                 blurRadius: 10,
               ),
             ],
@@ -66,19 +72,24 @@ class CircularMenuItem extends StatelessWidget {
       ),
       child: ClipOval(
         child: Material(
-          color: color ?? Theme.of(context).primaryColor,
+          color: item.color ?? Theme.of(context).primaryColor,
           child: InkWell(
             child: Padding(
-              padding: EdgeInsets.all(padding),
-              child: animatedIcon == null
+              padding: EdgeInsets.all(item.padding),
+              child: item.animatedIcon == null
                   ? Icon(
-                      icon,
-                      size: iconSize,
-                      color: iconColor ?? Colors.white,
+                      item.icon,
+                      size: item.iconSize,
+                      color: item.iconColor ?? Colors.white,
                     )
-                  : animatedIcon,
+                  : item.animatedIcon,
             ),
-            onTap: onTap,
+            onTap: () {
+              item.onTap();
+              if (item.onTapClosesMenu) {
+                closeMenu!();
+              }
+            },
           ),
         ),
       ),
@@ -87,25 +98,23 @@ class CircularMenuItem extends StatelessWidget {
 
   Widget _buildCircularMenuItemWithBadge(BuildContext context) {
     return _Badge(
-      color: badgeColor,
-      bottomOffset: badgeBottomOffet,
-      rightOffset: badgeRightOffet,
-      leftOffset: badgeLeftOffet,
-      topOffset: badgeTopOffet,
-      radius: badgeRadius,
-      textStyle: badgeTextStyle,
-      onTap: onTap,
-      textColor: badgeTextColor,
-      label: badgeLabel,
+      color: item.badgeColor,
+      bottomOffset: item.badgeBottomOffet,
+      rightOffset: item.badgeRightOffet,
+      leftOffset: item.badgeLeftOffet,
+      topOffset: item.badgeTopOffet,
+      radius: item.badgeRadius,
+      textStyle: item.badgeTextStyle,
+      onTap: item.onTap,
+      textColor: item.badgeTextColor,
+      label: item.badgeLabel,
       child: _buildCircularMenuItem(context),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return enableBadge
-        ? _buildCircularMenuItemWithBadge(context)
-        : _buildCircularMenuItem(context);
+    return item.enableBadge ? _buildCircularMenuItemWithBadge(context) : _buildCircularMenuItem(context);
   }
 }
 
@@ -161,10 +170,7 @@ class _Badge extends StatelessWidget {
                     label ?? '',
                     textAlign: TextAlign.center,
                     style: textStyle ??
-                        TextStyle(
-                            fontSize: 10,
-                            color: textColor ??
-                                Theme.of(context).colorScheme.secondary),
+                        TextStyle(fontSize: 10, color: textColor ?? Theme.of(context).colorScheme.secondary),
                   ),
                 ),
               ),

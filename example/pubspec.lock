@@ -12,12 +12,10 @@ packages:
   circular_menu:
     dependency: "direct main"
     description:
-      path: "."
-      ref: update-SDK-version
-      resolved-ref: a5438bd566e8296a83b5fdd85df6e0976e03ae50
-      url: "https://github.com/hasan-hm1/circular_menu.git"
-    source: git
-    version: "2.0.1"
+      path: ".."
+      relative: true
+    source: path
+    version: "3.0.0"
   collection:
     dependency: transitive
     description:

@@ -12,7 +12,7 @@ class CircularMenu extends StatefulWidget {
   final List<CircularMenuItem> items;
 
   /// menu alignment
-  final AlignmentGeometry alignment;
+  final Alignment alignment;
 
   /// menu radius
   final double radius;
@@ -22,6 +22,7 @@ class CircularMenu extends StatefulWidget {
 
   /// animation duration
   final Duration animationDuration;
+  final Duration alignAnimationDuration;
 
   /// animation curve in forward
   final Curve curve;
@@ -68,6 +69,7 @@ class CircularMenu extends StatefulWidget {
     this.key,
     this.startingAngleInRadian,
     this.endingAngleInRadian,
+    this.alignAnimationDuration = Duration.zero,
   })  : assert(items.isNotEmpty, 'items can not be empty list'),
         assert(items.length > 1, 'if you have one item no need to use a Menu'),
         super(key: key);
@@ -76,8 +78,7 @@ class CircularMenu extends StatefulWidget {
   CircularMenuState createState() => CircularMenuState();
 }
 
-class CircularMenuState extends State<CircularMenu>
-    with SingleTickerProviderStateMixin {
+class CircularMenuState extends State<CircularMenu> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   double? _completeAngle;
   late double _initialAngle;
@@ -106,18 +107,14 @@ class CircularMenuState extends State<CircularMenu>
         setState(() {});
       });
     _animation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          parent: _animationController,
-          curve: widget.curve,
-          reverseCurve: widget.reverseCurve),
+      CurvedAnimation(parent: _animationController, curve: widget.curve, reverseCurve: widget.reverseCurve),
     );
     _itemsCount = widget.items.length;
     super.initState();
   }
 
   void _configure() {
-    if (widget.startingAngleInRadian != null ||
-        widget.endingAngleInRadian != null) {
+    if (widget.startingAngleInRadian != null || widget.endingAngleInRadian != null) {
       if (widget.startingAngleInRadian == null) {
         throw ('startingAngleInRadian can not be null');
       }
@@ -136,45 +133,51 @@ class CircularMenuState extends State<CircularMenu>
       if (_endAngle! < _startAngle!) {
         throw 'startingAngleInRadian can not be greater than endingAngleInRadian';
       }
-      _completeAngle = _startAngle == _endAngle
-          ? 2 * math.pi
-          : (_endAngle! - _startAngle!) * math.pi;
+      _completeAngle = _startAngle == _endAngle ? 2 * math.pi : (_endAngle! - _startAngle!) * math.pi;
       _initialAngle = _startAngle! * math.pi;
     } else {
-      switch (widget.alignment.toString()) {
-        case 'Alignment.bottomCenter':
-          _completeAngle = 1 * math.pi;
-          _initialAngle = 1 * math.pi;
-          break;
-        case 'Alignment.topCenter':
-          _completeAngle = 1 * math.pi;
-          _initialAngle = 0 * math.pi;
-          break;
-        case 'Alignment.centerLeft':
-          _completeAngle = 1 * math.pi;
-          _initialAngle = 1.5 * math.pi;
-          break;
-        case 'Alignment.centerRight':
-          _completeAngle = 1 * math.pi;
-          _initialAngle = 0.5 * math.pi;
-          break;
-        case 'Alignment.center':
+      // alignment center left
+      if (widget.alignment.x == -1 && (widget.alignment.y >= -0.9) && (widget.alignment.y <= 0.9)) {
+        _completeAngle = 1 * math.pi;
+        _initialAngle = 1.5 * math.pi;
+        return;
+      }
+      // alignment center right
+      if (widget.alignment.x == 1 && (widget.alignment.y >= -0.9) && (widget.alignment.y <= 0.9)) {
+        _completeAngle = 1 * math.pi;
+        _initialAngle = 0.5 * math.pi;
+        return;
+      }
+      // alignment center top
+      if (widget.alignment.y == -1 && (widget.alignment.x >= -0.9) && (widget.alignment.x <= 0.9)) {
+        _completeAngle = 1 * math.pi;
+        _initialAngle = 0 * math.pi;
+        return;
+      }
+      // alignment center bottom
+      if (widget.alignment.y == 1 && (widget.alignment.x >= -0.9) && (widget.alignment.x <= 0.9)) {
+        _completeAngle = 1 * math.pi;
+        _initialAngle = 1 * math.pi;
+        return;
+      }
+      switch (widget.alignment) {
+        case Alignment.center:
           _completeAngle = 2 * math.pi;
           _initialAngle = 0 * math.pi;
           break;
-        case 'Alignment.bottomRight':
+        case Alignment.bottomRight:
           _completeAngle = 0.5 * math.pi;
           _initialAngle = 1 * math.pi;
           break;
-        case 'Alignment.bottomLeft':
+        case Alignment.bottomLeft:
           _completeAngle = 0.5 * math.pi;
           _initialAngle = 1.5 * math.pi;
           break;
-        case 'Alignment.topLeft':
+        case Alignment.topLeft:
           _completeAngle = 0.5 * math.pi;
           _initialAngle = 0 * math.pi;
           break;
-        case 'Alignment.topRight':
+        case Alignment.topRight:
           _completeAngle = 0.5 * math.pi;
           _initialAngle = 0.5 * math.pi;
           break;
@@ -195,21 +198,25 @@ class CircularMenuState extends State<CircularMenu>
     widget.items.asMap().forEach((index, item) {
       items.add(
         Positioned.fill(
-          child: Align(
+          child: AnimatedAlign(
             alignment: widget.alignment,
+            duration: widget.alignAnimationDuration,
+            curve: Curves.easeOut,
             child: Transform.translate(
               offset: Offset.fromDirection(
-                  _completeAngle == (2 * math.pi)
-                      ? (_initialAngle +
-                          (_completeAngle! / (_itemsCount)) * index)
-                      : (_initialAngle +
-                          (_completeAngle! / (_itemsCount - 1)) * index),
-                  _animation.value * widget.radius),
+                _completeAngle == (2 * math.pi)
+                    ? (_initialAngle + (_completeAngle! / (_itemsCount)) * index)
+                    : (_initialAngle + (_completeAngle! / (_itemsCount - 1)) * index),
+                _animation.value * widget.radius,
+              ),
               child: Transform.scale(
                 scale: _animation.value,
                 child: Transform.rotate(
                   angle: _animation.value * (math.pi * 2),
-                  child: item,
+                  child: CircularMenuItemWidget(
+                    item: item,
+                    closeMenu: _closeMenu,
+                  ),
                 ),
               ),
             ),
@@ -222,33 +229,38 @@ class CircularMenuState extends State<CircularMenu>
 
   Widget _buildMenuButton(BuildContext context) {
     return Positioned.fill(
-      child: Align(
+      child: AnimatedAlign(
         alignment: widget.alignment,
-        child: CircularMenuItem(
-          icon: null,
-          margin: widget.toggleButtonMargin,
-          color: widget.toggleButtonColor ?? Theme.of(context).primaryColor,
-          padding: (-_animation.value * widget.toggleButtonPadding * 0.5) +
-              widget.toggleButtonPadding,
-          onTap: () {
-            _animationController.status == AnimationStatus.dismissed
-                ? (_animationController).forward()
-                : (_animationController).reverse();
-            if (widget.toggleButtonOnPressed != null) {
-              widget.toggleButtonOnPressed!();
-            }
-          },
-          boxShadow: widget.toggleButtonBoxShadow,
-          animatedIcon: AnimatedIcon(
-            icon:
-                widget.toggleButtonAnimatedIconData, //AnimatedIcons.menu_close,
-            size: widget.toggleButtonSize,
-            color: widget.toggleButtonIconColor ?? Colors.white,
-            progress: _animation,
+        duration: widget.alignAnimationDuration,
+        curve: Curves.easeOut,
+        child: CircularMenuItemWidget(
+          item: CircularMenuItem(
+            icon: null,
+            margin: widget.toggleButtonMargin,
+            color: widget.toggleButtonColor ?? Theme.of(context).primaryColor,
+            padding: (-_animation.value * widget.toggleButtonPadding * 0.5) + widget.toggleButtonPadding,
+            onTap: _closeMenu,
+            boxShadow: widget.toggleButtonBoxShadow,
+            animatedIcon: AnimatedIcon(
+              icon: widget.toggleButtonAnimatedIconData, //AnimatedIcons.menu_close,
+              size: widget.toggleButtonSize,
+              color: widget.toggleButtonIconColor ?? Colors.white,
+              progress: _animation,
+            ),
+            onTapClosesMenu: false,
           ),
         ),
       ),
     );
+  }
+
+  void _closeMenu() {
+    _animationController.status == AnimationStatus.dismissed
+        ? (_animationController).forward()
+        : (_animationController).reverse();
+    if (widget.toggleButtonOnPressed != null) {
+      widget.toggleButtonOnPressed!();
+    }
   }
 
   @override
