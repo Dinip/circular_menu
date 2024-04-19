@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:circular_menu/circular_menu.dart';
+import 'package:draggable_circular_menu/draggable_circular_menu.dart';
 
 class CircularMenuExample extends StatefulWidget {
   CircularMenuExample({

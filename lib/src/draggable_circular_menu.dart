@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import 'circular_menu_item.dart';
+import 'draggable_circular_menu_item.dart';
 
 class CircularMenu extends StatefulWidget {
   /// use global key to control animation anywhere in the code

@@ -3,10 +3,10 @@
 
 A simple animated circular menu for Flutter, Adjustable radius, colors, alignment, animation curve and animation duration.
 
-[pub package](https://pub.dartlang.org/packages/circular_menu)
+[pub package](https://pub.dartlang.org/packages/draggable_circular_menu)
 
-<img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/bottom_center.gif" alt="bottom_center" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/bottom_left.gif" alt="bottom_left" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/bottom_right.gif" alt="bottom_right" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/center.gif" alt="center" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/center_left.gif" alt="center_left" width="150"/>
-<img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/center_right.gif" alt="center_right" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/top_center.gif" alt="top_center" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/top_left.gif" alt="top_left" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/top_right.gif" alt="top_right" width="150"/> <img src="https://raw.githubusercontent.com/hasan-hm1/circular_menu/master/doc/multi_circular_menu.gif" alt="bottom_center" width="150"/>
+<img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/bottom_center.gif" alt="bottom_center" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/bottom_left.gif" alt="bottom_left" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/bottom_right.gif" alt="bottom_right" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/center.gif" alt="center" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/center_left.gif" alt="center_left" width="150"/>
+<img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/center_right.gif" alt="center_right" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/top_center.gif" alt="top_center" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/top_left.gif" alt="top_left" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/top_right.gif" alt="top_right" width="150"/> <img src="https://raw.githubusercontent.com/Dinip/circular_menu/master/doc/multi_circular_menu.gif" alt="bottom_center" width="150"/>
 
 ## Getting Started
 
@@ -20,7 +20,7 @@ Add
 
 ```bash
 
- circular_menu : ^latest_version
+ draggable_circular_menu : ^latest_version
 
 ```
 
@@ -38,7 +38,7 @@ in your project's root directory.
 Import it to your project file
 
 ```dart
-import 'package:circular_menu/circular_menu.dart';
+import 'package:draggable_circular_menu/draggable_circular_menu.dart';
 ```
 
 And add it in it's most basic form :
