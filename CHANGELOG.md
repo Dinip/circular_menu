@@ -1,3 +1,6 @@
+## [4.0.1]
+- fix top and bottom center alignment, 13.04.2024.
+
 ## [4.0.0]
 - fix typo in CircularMenuItem offset params (badgeBottomOffet -> badgeBottomOffset), 13.04.2024.
 - change CircularMenuItem to a data class which is used to build CircularMenuItemWidget, 13.04.2024.

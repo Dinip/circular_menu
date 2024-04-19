@@ -149,14 +149,14 @@ class CircularMenuState extends State<CircularMenu> with SingleTickerProviderSta
       }
 
       // alignment center top
-      if (_finalAlignment.y == -1 && (_finalAlignment.x >= -0.7) && (_finalAlignment.x <= 0.7)) {
+      if (_finalAlignment.y <= -0.7 && (_finalAlignment.x >= -0.7) && (_finalAlignment.x <= 0.7)) {
         _completeAngle = 1 * math.pi;
         _initialAngle = 0 * math.pi;
         return;
       }
 
       // alignment center bottom
-      if (_finalAlignment.y == 1 && (_finalAlignment.x >= -0.7) && (_finalAlignment.x <= 0.7)) {
+      if (_finalAlignment.y >= 0.7 && (_finalAlignment.x >= -0.7) && (_finalAlignment.x <= 0.7)) {
         _completeAngle = 1 * math.pi;
         _initialAngle = 1 * math.pi;
         return;
