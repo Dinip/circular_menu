@@ -1,4 +1,4 @@
-name: circular_menu
+name: draggable_circular_menu
 description:  A simple animated circular menu for Flutter, Adjustable radius, colors, alignment, animation curve and animation duration.
 version: 4.0.0
 author: Dinis Pimpão <me@dinispimpao.pt>
